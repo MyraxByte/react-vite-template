@@ -1,5 +1,5 @@
 import { sidebar } from '@/constants/ui';
-import Header from '@/features/Header';
+import Header from '@/ui/Header';
 import Sidebar from '@/features/Sidebar';
 import Page from '@/ui/Page';
 import { Group, Stack } from '@mantine/core';

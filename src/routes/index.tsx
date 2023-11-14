@@ -1,4 +1,4 @@
-import Preloader from '@/features/Preloader';
+import Preloader from '@/ui/Preloader';
 import { useAuthStore } from '@/store/auth.store';
 import { Fragment, Suspense, useEffect, useState } from 'react';
 import { AuthRouter } from './auth.router';

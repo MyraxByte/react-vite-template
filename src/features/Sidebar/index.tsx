@@ -1,7 +1,7 @@
 import { Stack } from '@mantine/core';
-import Header from './components/Header';
-import Navigation from './components/Navigation';
-import styles from './styles.module.css';
+import Header from '@/ui/Navbar/components/Header';
+import Navigation from '@/ui/Navbar/components/Navigation';
+import styles from '@/ui/Navbar/styles.module.css';
 
 export default function Sidebar() {
     return (
