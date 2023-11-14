@@ -1,0 +1,39 @@
+.table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.table__header {
+	background-color: var(--mantine-color-dark-7);
+}
+
+.table__body {
+	background-color: var(--mantine-color-dark-6);
+}
+
+.table__row {
+	border-bottom: 1px solid var(--mantine-color-dark-4);
+}
+
+.table__row:nth-child(even) {
+	background-color: var(--mantine-color-dark-5);
+}
+
+.table__head {
+	position: relative;
+	padding-left: 24px;
+	padding-right: 24px;
+	height: 48px;
+	font-weight: 500;
+	font-size: 13px;
+	color: var(--mantine-color-white);
+}
+
+.table__cell {
+	padding-left: 24px;
+	padding-right: 24px;
+	height: 48px;
+	font-weight: 400;
+	font-size: 13px;
+	color: var(--mantine-color-text-3);
+}

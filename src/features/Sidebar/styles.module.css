@@ -1,0 +1,12 @@
+.sidebar__wrapper {
+	background: white;
+	font-family: Ubuntu, sans-serif;
+	height: 100vh;
+	overflow: hidden;
+	position: fixed;
+	min-width: 300px;
+	max-width: 300px;
+	min-height: 100vh;
+	max-height: 100vh;
+	z-index: 100;
+}

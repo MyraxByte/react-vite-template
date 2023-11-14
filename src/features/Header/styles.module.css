@@ -1,0 +1,26 @@
+.header__wrapper {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 110;
+}
+
+.header__content {
+    border-left-color: white;
+    border-left-width: 1px;
+    border-left-style: solid;
+    border-top-left-radius: 0.25rem;
+    position: relative;
+}
+
+.header__content::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    z-index: -1;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: white;
+}

@@ -1,0 +1,8 @@
+.page__wrapper {
+    border-left-color: var(--mantine-color-gray-2);
+    border-left-width: 1px;
+    border-left-style: solid;
+    background-color: var(--mantine-color-gray-2);
+    overflow-y: auto;
+    height: 100%;
+}

@@ -1,0 +1,43 @@
+.input {
+	margin-top: 8px;
+}
+
+.input:focus {
+	border-color: var(--mantine-color-primary);
+}
+
+.input[data-error] {
+	color: var(--mantine-color-error);
+}
+
+.input[data-invalid] {
+	color: var(--mantine-color-error);
+}
+
+.input[data-error]::placeholder {
+	color: var(--mantine-color-error);
+}
+
+.input[data-invalid]::placeholder {
+	color: var(--mantine-color-error);
+}
+
+.input__inner[data-error] {
+	color: var(--mantine-color-error);
+}
+
+.input__inner[data-invalid] {
+	color: var(--mantine-color-error);
+}
+
+.input__inner[data-error]::placeholder {
+	color: var(--mantine-color-error);
+}
+
+.input__inner[data-invalid]::placeholder {
+	color: var(--mantine-color-error);
+}
+
+.input__error-message {
+	color: var(--mantine-color-error);
+}

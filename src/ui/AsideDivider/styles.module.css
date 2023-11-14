@@ -1,0 +1,5 @@
+.aside-link__divider {
+	border-color: var(--mantine-color-dark-6);
+	height: 1px;
+	margin: 0;
+}
