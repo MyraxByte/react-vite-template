@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.7](https://gitlab.fgp.dev/mirazex/frontend-template/compare/v0.1.6...v0.1.7) (2023-11-16)
+
+### Features
+
+-   autobuild build.json for all release ([a5b67ea](https://gitlab.fgp.dev/mirazex/frontend-template/commit/a5b67ea1446b657a3cb30c36c66e98d2acfb3444))
+
 ## [0.1.6](https://gitlab.fgp.dev/mirazex/frontend-template/compare/v0.1.5...v0.1.6) (2023-11-16)
 
 ## [0.1.5](https://gitlab.fgp.dev/mirazex/frontend-template/compare/v0.1.4...v0.1.5) (2023-11-16)
