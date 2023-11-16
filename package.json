@@ -5,15 +5,26 @@
     "type": "module",
     "scripts": {
         "build": "tsc && vite build",
+        "commit": "cz",
         "dev": "vite",
         "generate:build": "sh ./scripts/generate-build.sh",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "prepare": "husky install",
         "preview": "vite preview",
-        "release": "commit-and-tag-version"
+        "release": "commit-and-tag-version",
+        "release:alpha": "commit-and-tag-version --prerelease alpha",
+        "release:beta": "commit-and-tag-version --prerelease beta",
+        "release:major": "commit-and-tag-version --release-as major",
+        "release:minor": "commit-and-tag-version --release-as minor",
+        "release:patch": "commit-and-tag-version --release-as patch"
     },
     "lint-staged": {
         "*.{ts,tsx}": "eslint --cache --fix"
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
     },
     "dependencies": {
         "@fontsource/poppins": "^5.0.8",
@@ -54,6 +65,8 @@
         "@typescript-eslint/parser": "^6.10.0",
         "@vitejs/plugin-react": "^4.1.1",
         "commit-and-tag-version": "^12.0.0",
+        "commitizen": "^4.3.0",
+        "cz-conventional-changelog": "^3.3.0",
         "eslint": "^8.53.0",
         "eslint-plugin-jsx-a11y": "^6.8.0",
         "eslint-plugin-react-hooks": "^4.6.0",
