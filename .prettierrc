@@ -15,5 +15,16 @@
     "proseWrap": "preserve",
     "htmlWhitespaceSensitivity": "css",
     "endOfLine": "lf",
-    "embeddedLanguageFormatting": "auto"
+    "embeddedLanguageFormatting": "auto",
+	"importOrder": [
+        "^react(.*)$",
+        "^react-dom(.*)$",
+        "^react-router-dom(.*)$",
+        "<THIRD_PARTY_MODULES>",
+        "^[./].*(?<!\\.(c|sc)ss)$",
+        "(c|sc)ss$"
+    ],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true,
+    "plugins": ["@trivago/prettier-plugin-sort-imports"]
   }
