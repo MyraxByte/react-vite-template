@@ -1,95 +1,83 @@
-# Шаблон Фронтенда
+# Frontend Template (React, Vite, TypeScript)
 
-> Данная инструкция актуальна для всех фронтендов, написанных на этом шаблоне. Также частично подходит для других фронтендов, но изменения могут быть значительными в зависимости от используемых технологий.
+## Contents
 
-> Не забывайте, чтобы фронтенды на шаблоне - не значит что они будут болт-в-болт работать по этой инструкции. Эта инструкция - общий ориентир.
+-   [Quick Start - Manual](#1)
+-   [Commands](#2)
+-   [Git Workflow Rules](#3)
+-   [Used Libraries](#4)
+-   [Extension plugins](#5)
 
-> Шаблон содержит настроенные автолинтеры и хуки которые будут запускаться автоматически при коммите.
+## <a name="1">Quick Start</a>
 
-# Содержание
-
--   [Быстрый запуск - ручной](#1)
--   [Полезности](#2)
--   [Правила работы с git](#3)
--   [Список используемых технологий](#4)
--   [Список используемых библиотек](#5)
-
-# <a name="1">Быстрый запуск</a>
-
-### Требования
+#### Requirements
 
 -   Node.js 18+
 
-### Инструкция
+#### Instructions
 
-1. Скопируйте `.env.example` в `.env` и измените в соответствии со своим окружением.
-2. Запустите `npm i`.
-3. Запустите `npm run dev`.
-4. Наслаждайтесь.
+1. Copy `.env.example` to `.env` and modify it according to your environment.
+2. Run `npm i`.
+3. Run `npm run dev`.
+4. Enjoy.
 
-# <a name="2">Полезности</a>
+## <a name="2">Commands</a>
 
-1. Сгенерировать build файл в /public папке: `npm run build:checksum`
-2. Упрощенный коммит через терминал: `npm run commit`
-3. Поднять версию приложения, обновить app.json и сгенерировать CHANGELOG.md:
+1. Generate a build file in the /public folder: `npm run build:checksum`
+2. Simplified commit via terminal: `npm run commit`
+3. Increase the version of the application, update app.json, and generate CHANGELOG.md:
 
     - `npm run release`
-    - `npm run release:alpha` - для альфа версий
-    - `npm run release:beta` - для бета версий
-    - `npm run release:patch` - для патч версий
-    - `npm run release:minor` - для минор версий
-    - `npm run release:major` - для мажор версий
+    - `npm run release:alpha` - for alpha versions
+    - `npm run release:beta` - for beta versions
+    - `npm run release:patch` - for patch versions
+    - `npm run release:minor` - for minor versions
+    - `npm run release:major` - for major versions
 
-    > После этих комманд нужно будет обязательно вызвать `git push --follow-tags origin develop` что бы запушить тег версии на гитхаб.
+    > After these commands, you must call `git push --follow-tags origin develop` to push the version tag to GitHub.
 
-# <a name="3">Правила работы с репозиторием</a>
+## <a name="3">Git Workflow Rules</a>
 
-1. Все изменения вносятся в новую ветку созданную на основе `develop`.
-2. Каждый коммит должен быть сопровожден комментарием, описывающим суть изменений.
-3. Оформление коммитов должно соответствовать [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). (можно оформлять через `npm run commit`)
-    - `feature` - новая функциональность
-    - `fix` - исправление ошибок
-    - `refactor` - изменение кода без исправления ошибок и добавления новых функций
-    - `style` - изменение стилей
-    - `test` - добавление тестов
-    - `docs` - изменение документации
-    - `chore` - изменение конфигурации проекта и другие вспомогательные изменения
-4. После завершения работы над задачей, создается **Merge Request** в ветку `develop`.
-5. Каждый **Merge Request** должен содержать ссылки на задачи которые он решает.
-6. Необходимо указывать в **Merge Request** проверяющего кода (обычно это **Team Lead** или **Tech Lead** проекта).
+1. All changes are made in a new branch based on `develop`.
+2. Each commit must be accompanied by a comment describing the essence of the changes.
+3. Commit formatting must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). (can be done via `npm run commit`)
+    - `feature` - new functionality
+    - `fix` - bug fixes
+    - `refactor` - code changes without fixing bugs or adding new features
+    - `style` - style changes
+    - `test` - adding tests
+    - `docs` - documentation changes
+    - `chore` - project configuration changes and other auxiliary changes
+4. After completing work on a task, create a **Pull Request** to the `develop` branch.
+5. Each **Pull Request** must contain links to the tasks it resolves.
+6. It's necessary to designate a code reviewer in the **Pull Request** (usually the **Team Lead** or **Tech Lead** of the project).
 
-# <a name="4">Список используемых технологий</a>
+## <a name="4">Used Libraries</a>
 
--   React
--   Vite
--   TypeScript
+-   axios - for HTTP requests
+-   mantine - for UI work
+-   react-router - for routing
+-   react-hook-form - for form handling
+-   vite - for project building and running the dev server
+-   vite-plugin-checker - for type checking during development
+-   typescript - for typing the entire project and its dependencies (including libraries)
+-   eslint - for linting
+-   zustand - for global state management
+-   zod - for input validation
+-   radash - contains useful functions for working with arrays and objects
+-   dayjs - for date and time handling
+-   @tanstack/react-query - for handling requests
+-   @tanstack/table - for table handling
+-   iconify - for UI icons
+-   lint-staged - for running linters before committing
+-   husky - for running hooks before committing
+-   prettier - for code formatting
+-   sort-package-json - for sorting package.json
+-   @trivago/prettier-plugin-sort-imports - for sorting imports
 
-# <a name="5">Список используемых библиотек</a>
+## <a name="5">Extension plugins</a>
 
--   axios - для HTTP запросов
--   mantine - для работы с UI
--   react-router - для роутинга
--   react-hook-form - для работы с формами
--   vite - для сборки проекта и запуска dev сервера
--   vite-plugin-checker - для проверки типов во время разработки
--   typescript - для типизации всего проекта и его зависимостей (включая библиотеки)
--   eslint - для линтинга
--   zustand - для работы с глобальным стейтом
--   zod - для валидации входных данных
--   radash - содержит удобные функции для работы с массивами и объектами
--   dayjs - для работы с датой и временем
--   @tanstack/react-query - для работы с запросами
--   @tanstack/table - для работы с таблицами
--   iconify - для иконок в UI
--   lint-staged - для запуска линтеров перед коммитом
--   husky - для запуска хуков перед коммитом
--   prettier - для форматирования кода
--   sort-package-json - для сортировки package.json
--   @trivago/prettier-plugin-sort-imports - для сортировки импортов
-
-# <a name="6">Список расширений</a>
-
-### Visual Studio Code
+#### Visual Studio Code
 
 -   [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 -   [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
