@@ -1,16 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import showVersion from './utils/version';
+import '@/utils/dayjs';
+
 import RootProvider from './features/Providers';
 import Router from './routes';
+import showVersion from './utils/version';
 
-import '@mantine/core/styles.layer.css';
 import '@/styles/global.css';
-import '@/utils/dayjs';
-import '@fontsource/poppins/latin.css';
 import '@fontsource/poppins/latin-italic.css';
+import '@fontsource/poppins/latin.css';
 import '@fontsource/ubuntu/latin.css';
+import '@mantine/core/styles.layer.css';
 
 const element = document.getElementById('root')!;
 
