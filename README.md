@@ -29,7 +29,7 @@
 
 # <a name="2">Полезности</a>
 
-1. Сгенерировать build файл в /public папке: `npm run generate:build`
+1. Сгенерировать build файл в /public папке: `npm run build:checksum`
 2. Упрощенный коммит через терминал: `npm run commit`
 3. Поднять версию приложения, обновить app.json и сгенерировать CHANGELOG.md:
 
