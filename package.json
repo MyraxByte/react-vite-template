@@ -5,9 +5,9 @@
     "type": "module",
     "scripts": {
         "build": "tsc && vite build",
+        "build:checksum": "sh ./scripts/build-checksum.sh",
         "commit": "cz",
         "dev": "vite",
-        "generate:build": "sh ./scripts/generate-build.sh",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "prepare": "husky install",
         "preview": "vite preview",
