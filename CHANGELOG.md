@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.2](https://gitlab.fgp.dev/mirazex/frontend-template/compare/v0.1.1...v0.1.2) (2023-11-16)
+
 ## [0.1.1](https://gitlab.fgp.dev/mirazex/frontend-template/compare/v0.1.0...v0.1.1) (2023-11-16)
 
 ## [0.1.0](https://gitlab.fgp.dev/mirazex/frontend-template/compare/v0.0.3...v0.1.0) (2023-11-16)

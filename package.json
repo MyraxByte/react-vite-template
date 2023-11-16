@@ -1,6 +1,6 @@
 {
     "name": "frontend-template",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "private": true,
     "type": "module",
     "scripts": {
@@ -84,7 +84,7 @@
     },
     "commit-and-tag-version": {
         "scripts": {
-            "prerelease": "sh ./scripts/build-checksum.sh"
+            "precommit": "sh ./scripts/build-checksum.sh"
         }
     }
 }
