@@ -1,6 +1,6 @@
 {
     "name": "frontend-template",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "private": true,
     "type": "module",
     "scripts": {
@@ -9,7 +9,8 @@
         "generate:build": "sh ./scripts/generate-build.sh",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "prepare": "husky install",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "release": "commit-and-tag-version"
     },
     "lint-staged": {
         "*.{ts,tsx}": "eslint --cache --fix"
@@ -52,6 +53,7 @@
         "@typescript-eslint/eslint-plugin": "^6.10.0",
         "@typescript-eslint/parser": "^6.10.0",
         "@vitejs/plugin-react": "^4.1.1",
+        "commit-and-tag-version": "^12.0.0",
         "eslint": "^8.53.0",
         "eslint-plugin-jsx-a11y": "^6.8.0",
         "eslint-plugin-react-hooks": "^4.6.0",
