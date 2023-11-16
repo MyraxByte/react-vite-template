@@ -46,6 +46,7 @@
         "dayjs": "^1.11.10",
         "localforage": "^1.10.0",
         "match-sorter": "^6.3.1",
+        "million": "^2.6.4",
         "radash": "^11.0.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",

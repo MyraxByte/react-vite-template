@@ -58,3 +58,11 @@
 # <a name="4">Полезности</a>
 
 1. Сгенерировать build файл в /public папке: `npm run generate:build`
+2. Упрощенный коммит через терминал: `npm run commit`
+3. Поднять версию приложения, обновить app.json и сгенерировать CHANGELOG.md:
+    - `npm run release`
+    - `npm run release:alpha` - для альфа версий
+    - `npm run release:beta` - для бета версий
+    - `npm run release:patch` - для патч версий
+    - `npm run release:minor` - для минор версий
+    - `npm run release:major` - для мажор версий
