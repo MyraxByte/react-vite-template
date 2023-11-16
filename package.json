@@ -1,6 +1,6 @@
 {
     "name": "frontend-template",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "private": true,
     "type": "module",
     "scripts": {
@@ -81,5 +81,10 @@
         "typescript": "^5.2.2",
         "vite": "^4.5.0",
         "vite-plugin-checker": "^0.6.2"
+    },
+    "commit-and-tag-version": {
+        "scripts": {
+            "prerelease": "sh ./scripts/build-checksum.sh"
+        }
     }
 }
