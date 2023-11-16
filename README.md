@@ -86,3 +86,16 @@
 -   prettier - для форматирования кода
 -   sort-package-json - для сортировки package.json
 -   @trivago/prettier-plugin-sort-imports - для сортировки импортов
+
+# <a name="6">Список расширений</a>
+
+### Visual Studio Code
+
+-   [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+-   [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+-   [Console Ninja](https://marketplace.visualstudio.com/items?itemName=WallabyJs.console-ninja)
+-   [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens)
+-   [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+-   [IntelliCode](https://marketplace.visualstudio.com/items?itemName=VisualStudioExptTeam.vscodeintellicode)
+-   [Pretty TypeScript Errors](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)
+-   [Iconify IntelliSense](https://marketplace.visualstudio.com/items?itemName=antfu.iconify)
