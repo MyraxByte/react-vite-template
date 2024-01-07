@@ -1,5 +1,5 @@
 # Frontend Template (React, Vite, TypeScript)
-Frontent template for big applications
+Template for creating a big frontend project with React, Vite, TypeScript, and other useful libraries.
 
 ## Contents
 
