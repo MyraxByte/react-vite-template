@@ -1,4 +1,5 @@
 # Frontend Template (React, Vite, TypeScript)
+Frontent template for big applications
 
 ## Contents
 
