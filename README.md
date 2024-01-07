@@ -24,17 +24,10 @@ Template for creating a big frontend project with React, Vite, TypeScript, and o
 
 ## <a name="2">Commands</a>
 
-1. Generate a build file in the /public folder: `npm run build:checksum`
-2. Simplified commit via terminal: `npm run commit`
-3. Increase the version of the application, update app.json, and generate CHANGELOG.md:
+1. Simplified commit via terminal: `npm run commit`
+2. Increase the version of the application, update app.json, and generate CHANGELOG.md:
 
     - `npm run release`
-    - `npm run release:alpha` - for alpha versions
-    - `npm run release:beta` - for beta versions
-    - `npm run release:patch` - for patch versions
-    - `npm run release:minor` - for minor versions
-    - `npm run release:major` - for major versions
-
     > After these commands, you must call `git push --follow-tags origin develop` to push the version tag to GitHub.
 
 ## <a name="3">Git Workflow Rules</a>
@@ -58,7 +51,6 @@ Template for creating a big frontend project with React, Vite, TypeScript, and o
 -   axios - for HTTP requests
 -   mantine - for UI work
 -   react-router - for routing
--   react-hook-form - for form handling
 -   vite - for project building and running the dev server
 -   vite-plugin-checker - for type checking during development
 -   typescript - for typing the entire project and its dependencies (including libraries)
