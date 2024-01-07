@@ -1,16 +1,17 @@
+import { useMemo } from 'react';
+
+import AsideDivider from '@/components/AsideDivider';
+import AsideNavLink from '@/components/AsideNavLink';
+import { sidebar } from '@/constants/ui';
+import getGroupRoutes from '@/helpers/getGroupRoutes';
 import { useAuthStore } from '@/store/auth.store';
 import { Group, ScrollArea, Stack, Text } from '@mantine/core';
-import { useMemo } from 'react';
-import { sidebar } from '@/constants/ui';
-import AsideDivider from '@/ui/AsideDivider';
-import AsideNavLink from '@/ui/AsideNavLink';
-import getGroupRoutes from '@/helpers/getGroupRoutes';
 
 export default function Navigation() {
     const user = useAuthStore((state) => state.user);
     const routes = useMemo(() => getGroupRoutes(user), [user]);
 
-    const withSpacer = (groupIndex: number) => groupIndex === 0 ? 0 : 16;
+    const withSpacer = (groupIndex: number) => (groupIndex === 0 ? 0 : 16);
 
     return (
         <ScrollArea.Autosize mah={'calc(100vh - 86px)'} pb={24}>

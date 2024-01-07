@@ -7,11 +7,10 @@ import RootProvider from './features/Providers';
 import Router from './routes';
 import showVersion from './utils/version';
 
-import '@/styles/global.css';
-import '@fontsource/poppins/latin-italic.css';
-import '@fontsource/poppins/latin.css';
+import '@/assets/styles/global.css';
 import '@fontsource/ubuntu/latin.css';
 import '@mantine/core/styles.layer.css';
+import '@mantine/dates/styles.css';
 
 const element = document.getElementById('root')!;
 

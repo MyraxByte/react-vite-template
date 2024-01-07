@@ -1,8 +1,11 @@
 // import { Link } from 'react-router-dom';
-import useLoginForm from './hooks/useLoginForm';
-import { Button, Card, Group, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
-import styles from '@/ui/Input/input.module.css';
 import { Controller } from 'react-hook-form';
+
+import { Button, Card, Group, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
+
+import useLoginForm from './hooks/useLoginForm';
+
+import styles from '@/components/Input/input.module.css';
 
 export default function LoginForm() {
     const { form, onSubmit } = useLoginForm();
@@ -28,7 +31,7 @@ export default function LoginForm() {
                                     <TextInput
                                         label="Email"
                                         placeholder="Enter your email"
-										classNames={{ input: styles.input, error: styles['input__error-message'] }}
+                                        classNames={{ input: styles.input, error: styles['input__error-message'] }}
                                         error={fieldState.error?.message}
                                         {...field}
                                     />

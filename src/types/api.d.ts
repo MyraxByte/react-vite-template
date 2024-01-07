@@ -10,6 +10,5 @@ interface ApiResponseList<T> {
     data: {
         items: T[];
         count: number;
-    }
+    };
 }
-

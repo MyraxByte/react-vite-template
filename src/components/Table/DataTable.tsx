@@ -1,9 +1,9 @@
-import Table from '@/ui/Table/Table';
-import TableBody from '@/ui/Table/TableBody';
-import TableCell from '@/ui/Table/TableCell';
-import TableHead from '@/ui/Table/TableHead';
-import TableHeader from '@/ui/Table/TableHeader';
-import TableRow from '@/ui/Table/TableRow';
+import Table from '@/components/Table/Table';
+import TableBody from '@/components/Table/TableBody';
+import TableCell from '@/components/Table/TableCell';
+import TableHead from '@/components/Table/TableHead';
+import TableHeader from '@/components/Table/TableHeader';
+import TableRow from '@/components/Table/TableRow';
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
 interface ITableProps<TData, TValue> {

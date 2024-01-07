@@ -1,32 +1,37 @@
-import Preloader from '@/ui/Preloader';
-import { useAuthStore } from '@/store/auth.store';
 import { Fragment, Suspense, useEffect, useState } from 'react';
-import { AuthRouter } from './auth.router';
 import { RouterProvider } from 'react-router-dom';
-import { AppRouter } from './app.router';
+
+import Preloader from '@/components/Preloader';
 import { useLoadConstants } from '@/hooks/useConstants';
+import { useAuthStore } from '@/store/auth.store';
+
+import { AppRouter } from './app.router';
+import { AuthRouter } from './auth.router';
 
 export default function Router() {
     const [isReady, setIsReady] = useState(false);
-    const isAuthenticated = useAuthStore((state) => state.user);
+    const user = useAuthStore((state) => state.user);
 
     const checkAuth = useAuthStore((state) => state.auth);
-	const preloadConstants = useLoadConstants();
+    const preloadConstants = useLoadConstants();
 
     useEffect(() => {
         Promise.allSettled([checkAuth(), preloadConstants()]).finally(() => {
             setIsReady(true);
         });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    if (!isReady) return <Preloader />;
+    const getRouter = () => {
+        if (!user) return AuthRouter;
+        return AppRouter;
+    };
 
+    if (!isReady) return <Preloader />;
     return (
         <Suspense fallback={<Fragment />}>
-            {!isAuthenticated && <RouterProvider router={AppRouter} />}
-            {!!isAuthenticated && <RouterProvider router={AuthRouter} />}
+            <RouterProvider router={getRouter()} />
         </Suspense>
     );
 }

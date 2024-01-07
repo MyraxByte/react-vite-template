@@ -1,9 +1,10 @@
-import { sidebar } from '@/constants/ui';
-import Header from '@/ui/Header';
-import Sidebar from '@/features/Sidebar';
-import Page from '@/ui/Page';
-import { Group, Stack } from '@mantine/core';
 import { Outlet } from 'react-router-dom';
+
+import Header from '@/components/Header';
+import Page from '@/components/Page';
+import { sidebar } from '@/constants/ui';
+import Sidebar from '@/features/Sidebar';
+import { Group, Stack } from '@mantine/core';
 
 export default function AppLayout({ children }: { children?: React.ReactNode }) {
     return (

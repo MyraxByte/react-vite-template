@@ -1,18 +1,15 @@
-import { createBrowserRouter } from 'react-router-dom';
-import ErrorPage from '@/pages/error.page';
-import RootPage from '@/pages/root.page';
-import AppLayout from '@/pages/layout';
+import { Navigate, Route, createBrowserRouter, createRoutesFromChildren } from 'react-router-dom';
 
-export const AppRouter = createBrowserRouter([
-    {
-        path: '/',
-        Component: AppLayout,
-        ErrorBoundary: ErrorPage.withLayout(AppLayout),
-        children: [
-            {
-                index: true,
-                Component: RootPage,
-            },
-        ],
-    },
-]);
+import ErrorPage from '@/pages/error.page';
+import AppLayout from '@/pages/layout';
+import RootPage from '@/pages/root.page';
+
+export const AppRouter = createBrowserRouter(
+    createRoutesFromChildren(
+        <Route path="/" Component={AppLayout} ErrorBoundary={ErrorPage.withLayout(AppLayout)}>
+            <Route index Component={RootPage} />
+
+            <Route path={'*'} element={<Navigate to={'/'} replace={true} />} />
+        </Route>,
+    ),
+);

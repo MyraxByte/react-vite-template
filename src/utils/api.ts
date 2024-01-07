@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { buildPath } from './paths';
 
 export const api = axios.create({
-    baseURL: buildPath(import.meta.env.VITE_APP_BACKEND_URL, '/api'),
+    baseURL: '/api',
 });
 
 api.interceptors.request.use((config) => {

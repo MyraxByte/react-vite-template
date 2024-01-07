@@ -1,7 +1,6 @@
-type QueryKey = readonly unknown[]
-
 type TPaginatedData<T> = {
     isLoading: boolean;
+    isError: boolean;
     items: T[];
     meta: {
         total: number;
@@ -22,4 +21,21 @@ type TPaginatedOptions = {
     path: string;
     params?: Record<string, unknown>;
     defaultLimit?: number;
+};
+
+type TInfinityPaginatedOptions = {
+    queryKey: QueryKey;
+    path: string;
+    params?: Record<string, unknown>;
+    defaultLimit?: number;
+    initialParam?: {
+        skip?: number;
+        limit?: number;
+    };
+};
+
+type TInfinityPaginatedData<T> = {
+    pages: Array<ApiResponseList<T>['data']>;
+    count: number;
+    items: T[];
 };

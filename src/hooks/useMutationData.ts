@@ -22,11 +22,9 @@ type TMutationProps<T> = {
 
 export default function useMutationData<T>({ url, type = 'post', onSuccess, queryKeys, searchParams }: TMutationProps<T>) {
     const queryClient = useQueryClient();
-
     return useMutation<unknown, unknown, T>({
         mutationFn: (variables) => {
             const method = MutationMethodByType[type] as 'post' | 'patch' | 'delete';
-
             if (method === 'delete') return api.delete(url(variables), { params: searchParams });
             return api[method](url(variables), variables, { params: searchParams });
         },

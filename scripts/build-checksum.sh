@@ -7,11 +7,4 @@ echo '{
   "version": "'$(node -p "require('./package.json').version")'"
 }' >./src/app.json
 
-# copy to public folder
-cp ./src/app.json ./public/build.json
-
-# add to git
-git add ./src/app.json
-git add ./public/build.json
-
-echo 'app.json created and added to staging.'
+echo 'app.json created.'
