@@ -1,35 +1,33 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as zod from 'zod';
 import { useAuthStore } from '@/store/auth.store';
+import { useForm, zodResolver } from '@mantine/form';
+import * as zod from 'zod';
 
 const schema = zod.object({
-	email: zod.string().email(),
-	password: zod.string().min(6),
+    email: zod.string().email(),
+    password: zod.string().min(6),
 });
 
 export default function useLoginForm() {
-	const login = useAuthStore((state) => state.login);
+    const login = useAuthStore((state) => state.login);
 
     const form = useForm({
-        mode: 'onChange',
-        resolver: zodResolver(schema),
-        defaultValues: {
+        validate: zodResolver(schema),
+        initialValues: {
             email: '',
             password: '',
         },
     });
 
-    const onSubmit = form.handleSubmit(async (data) => {
+    const onSubmit = form.onSubmit(async (data) => {
         try {
             await login(data);
         } catch (e: any) {
             if (e.response.data.code === 2) {
-                form.setError('email', { message: 'User not found' });
+                form.setFieldError('email', 'User not found');
             }
 
             if (e.response.data.code === 6) {
-                form.setError('password', { message: 'Wrong password' });
+                form.setFieldError('password', 'Wrong password');
             }
         }
     });

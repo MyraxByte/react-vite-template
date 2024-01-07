@@ -24,7 +24,6 @@
     },
     "dependencies": {
         "@fontsource/ubuntu": "^5.0.8",
-        "@hookform/resolvers": "^3.3.4",
         "@iconify/react": "^4.1.1",
         "@mantine/carousel": "^7.4.0",
         "@mantine/charts": "^7.4.0",
@@ -51,6 +50,7 @@
         "dayjs": "^1.11.10",
         "embla-carousel-react": "^7.1.0",
         "localforage": "^1.10.0",
+        "mantine-form-zod-resolver": "^1.1.0",
         "match-sorter": "^6.3.1",
         "million": "^2.6.4",
         "radash": "^11.0.0",

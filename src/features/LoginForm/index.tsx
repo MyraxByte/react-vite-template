@@ -1,6 +1,3 @@
-// import { Link } from 'react-router-dom';
-import { Controller } from 'react-hook-form';
-
 import { Button, Card, Group, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
 
 import useLoginForm from './hooks/useLoginForm';
@@ -24,32 +21,18 @@ export default function LoginForm() {
                 <Card.Section inheritPadding px={32}>
                     <Stack gap={36}>
                         <Stack gap={36} w={372}>
-                            <Controller
-                                name="email"
-                                control={form.control}
-                                render={({ field, fieldState }) => (
-                                    <TextInput
-                                        label="Email"
-                                        placeholder="Enter your email"
-                                        classNames={{ input: styles.input, error: styles['input__error-message'] }}
-                                        error={fieldState.error?.message}
-                                        {...field}
-                                    />
-                                )}
+                            <TextInput
+                                label="Email"
+                                placeholder="Enter your email"
+                                classNames={{ input: styles.input, error: styles['input__error-message'] }}
+                                {...form.getInputProps('email')}
                             />
 
-                            <Controller
-                                name="password"
-                                control={form.control}
-                                render={({ field, fieldState }) => (
-                                    <PasswordInput
-                                        label="Password"
-                                        placeholder="Enter your password"
-                                        classNames={{ input: styles.input, error: styles['input__error-message'] }}
-                                        error={fieldState.error?.message}
-                                        {...field}
-                                    />
-                                )}
+                            <PasswordInput
+                                label="Password"
+                                placeholder="Enter your password"
+                                classNames={{ input: styles.input, error: styles['input__error-message'] }}
+                                {...form.getInputProps('password')}
                             />
                         </Stack>
 

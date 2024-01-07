@@ -26,6 +26,6 @@ export async function checkEmail(form: { email: string }) {
 }
 
 export async function identify() {
-    // const response = await api.get<ApiResponse<any>>(`/auth/identify`);
-    return { user: 'user' };
+    const response = await api.get<ApiResponse<any>>(`/auth/identify`);
+    return response.data.data;
 }

@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 .env
-./src/app.json
+src/app.json
 
 # Editor directories and files
 .vscode/*
