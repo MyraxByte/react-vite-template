@@ -1,0 +1,4 @@
+HelloWorld:
+    greeting: "Hello, World!"
+    welcome_message: "Welcome to our application!"
+    description: "This is a sample application to demonstrate localization."

@@ -1,71 +1,106 @@
-import { useState } from 'react';
-import { createSearchParams, useSearchParams } from 'react-router-dom';
+import { useState } from "react";
+import { QueryKey, useQuery } from "@tanstack/react-query";
 
-import { api } from '@/utils/api';
-import { useQuery } from '@tanstack/react-query';
+import { ApiPaginatedQuery, ApiResponse } from "@/types/api-response";
 
-export default function usePaginatedData<T>({ queryKey, path, defaultLimit = 10, params = {} }: TPaginatedOptions): TPaginatedData<T> {
-    const defaultSearchParams = createSearchParams({
-        page: '1',
-        limit: `${defaultLimit}`,
-    });
+import { useQueryParams } from "./useQueryParams";
 
-    const [searchParams, setSearchParams] = useSearchParams(defaultSearchParams);
+type TPaginatedOptions<T> = {
+	queryKey: QueryKey;
+	queryFn: (paginate: ApiPaginatedQuery) => Promise<ApiResponse<T[]>>;
+    params?: Record<string, unknown>;
+    defaultLimit?: number;
+};
 
-    const searchPage = Number(searchParams.get('page'));
-    const searchLimit = Number(searchParams.get('limit'));
-
-    const [currentPage, setCurrentPage] = useState(searchPage);
-    const [limit, setLimit] = useState(searchLimit);
-
-    params.limit = limit;
-    params.skip = (currentPage - 1) * limit;
-
-    const fetchData = () => api.get(`${path}`, { params }).then((res) => res.data);
-
-    const { isLoading, data, isError } = useQuery({
-        queryKey: [...queryKey, { ...params, page: currentPage }],
-        queryFn: fetchData,
-        staleTime: Infinity,
-    });
-
-    const totalPages = Math.ceil((data?.count || 0) / limit);
-    const hasPreviousPage = currentPage > 1;
-    const hasNextPage = currentPage < totalPages;
-
-    const onPreviousPage = () => {
-        if (!hasPreviousPage) return;
-        setCurrentPage((prev) => prev - 1);
-        setSearchParams({ page: `${currentPage - 1}` });
+type TPaginatedData<T> = {
+	isLoading: boolean;
+	isFetched: boolean;
+	isFetching: boolean;
+	isError: boolean;
+	isPending: boolean;
+	error: unknown;
+	refetch: () => Promise<unknown>;
+	items: T[];
+    meta: {
+        total: number;
+        currentPage: number;
+        totalPages: number;
+        hasPreviousPage: boolean;
+        hasNextPage: boolean;
+        limit: number;
     };
+    onPreviousPage: () => void;
+    onNextPage: () => void;
+    onPage: (page: number) => void;
+    setLimit: (limit: number) => void;
+};
 
-    const onNextPage = () => {
-        if (!hasNextPage) return;
-        setCurrentPage((prev) => prev + 1);
-        setSearchParams({ page: `${currentPage + 1}` });
-    };
+export default function usePaginatedData<T>({ queryKey, queryFn, defaultLimit = 10, params = {} }: TPaginatedOptions<T>): TPaginatedData<T> {
+	const [searchParams, setSearchParams] = useQueryParams({
+		page: "1",
+		limit: `${defaultLimit}`,
+	});
 
-    const onPage = (page: number) => {
-        if (page < 1 || page > totalPages) return;
-        setCurrentPage(page);
-        setSearchParams({ page: `${page}` });
-    };
+	const searchPage = Number(searchParams.page);
+	const searchLimit = Number(searchParams.limit);
 
-    return {
-        isLoading,
-        isError,
-        items: data?.items ?? [],
-        meta: {
-            total: data?.count ?? 0,
-            currentPage,
-            totalPages,
-            hasPreviousPage,
-            hasNextPage,
-            limit,
-        },
-        onPreviousPage,
-        onNextPage,
-        onPage,
-        setLimit,
-    };
+	const [currentPage, setCurrentPage] = useState(searchPage);
+	const [limit, setLimit] = useState(searchLimit);
+
+	const queryParams = {
+		...params,
+		limit,
+		skip: (currentPage - 1) * limit,
+	};
+
+	const { isLoading, data, isFetching, isError, isFetched, isPending, error, refetch } = useQuery({
+		queryKey: [...queryKey, { ...queryParams, page: currentPage }],
+		queryFn: () => queryFn(queryParams),
+		staleTime: Infinity,
+	});
+
+	const totalPages = Math.ceil((data?.count || 0) / limit);
+	const hasPreviousPage = currentPage > 1;
+	const hasNextPage = currentPage < totalPages;
+
+	const onPreviousPage = () => {
+		if (!hasPreviousPage) return;
+		setCurrentPage((prev) => prev - 1);
+		setSearchParams("page", `${currentPage - 1}`);
+	};
+
+	const onNextPage = () => {
+		if (!hasNextPage) return;
+		setCurrentPage((prev) => prev + 1);
+		setSearchParams("page", `${currentPage + 1}`);
+	};
+
+	const onPage = (page: number) => {
+		if (page < 1 || page > totalPages) return;
+		setCurrentPage(page);
+		setSearchParams("page", `${page}`);
+	};
+
+	return {
+		isLoading,
+		isError,
+		isFetched,
+		isPending,
+		isFetching,
+		error,
+		refetch,
+		items: data?.data ?? [],
+		meta: {
+			total: data?.count ?? 0,
+			currentPage,
+			totalPages,
+			hasPreviousPage,
+			hasNextPage,
+			limit,
+		},
+		onPreviousPage,
+		onNextPage,
+		onPage,
+		setLimit,
+	};
 }

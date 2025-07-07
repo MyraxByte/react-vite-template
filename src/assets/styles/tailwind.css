@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/aspect-ratio";
+@plugin "@tailwindcss/container-queries";
+@plugin "@tailwindcss/forms";
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:where([data-mantine-color-scheme=dark], [data-mantine-color-scheme=dark] *));
+@custom-variant light (&:where([data-mantine-color-scheme=light], [data-mantine-color-scheme=light] *));
+
+@theme {
+	--font-display: "Inter", "sans-serif";
+
+	--animate-small-breathing: small-breathing 2s ease-in-out infinite;
+	--animate-spin: spin 1s linear infinite;
+	--animate-rotation: rotation 2s linear infinite;
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes small-breathing {
+		0%,
+		100% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.02);
+		}
+	}
+
+	@keyframes rotation {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+}

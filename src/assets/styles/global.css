@@ -1,19 +1,22 @@
-html, body {
-	height: 100%;
-	margin: 0;
-	overflow-x: hidden;
+@layer theme, base, mantine, components, utilities;
+@import "./tailwind.css";
+@import "@mantine/core/styles.layer.css";
+@import "@mantine/dates/styles.layer.css";
+@import "@mantine/dropzone/styles.layer.css";
+
+* {
+	font-family: "Inter", sans-serif;
+	user-select: none;
 }
 
 body {
-	font-family: Poppins, Ubuntu, sans-serif;
+	overflow: hidden;
+	word-break: break-all;
+}
+
+body {
+	font-family: Inter, sans-serif;
 	font-weight: 400;
 	font-size: 16px;
 	line-height: 1.5;
-	overflow: hidden;
-	background: var(--mantine-color-blue-0);
-}
-
-a {
-	color: inherit;
-	text-decoration: none;
 }

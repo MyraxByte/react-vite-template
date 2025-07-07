@@ -1,25 +1,49 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from "react-dom/client";
+import { initReactI18next } from "react-i18next";
+import { RouterProvider } from "react-router";
+import i18n from "i18next";
+import resources from "virtual:i18next-loader";
 
-import '@/utils/dayjs';
+import { logger } from "@/lib";
+import MantineProvider from "@/providers/mantine-provider";
+import { ReactQueryProvider } from "@/providers/query-provider";
 
-import RootProvider from './features/Providers';
-import Router from './routes';
-import showVersion from './utils/version';
+import "@/lib/dayjs";
+import "./api.config";
 
-import '@/assets/styles/global.css';
-import '@fontsource/ubuntu/latin.css';
-import '@mantine/core/styles.layer.css';
-import '@mantine/dates/styles.css';
+import { router } from "./router";
 
-const element = document.getElementById('root')!;
+import "@/assets/styles/index.css";
 
-showVersion();
 
-ReactDOM.createRoot(element).render(
-    <React.StrictMode>
-        <RootProvider>
-            <Router />
-        </RootProvider>
-    </React.StrictMode>,
-);
+async function bootstrap() {
+	logger.init("APP");
+
+	await i18n.use(initReactI18next).init({
+		lng: "en",
+		fallbackLng: "en",
+		resources,
+		interpolation: {
+			escapeValue: false, // React already does escaping
+		},
+	}).then(() => {
+		logger.info("i18n initialized");
+	}).catch((error) => {
+		logger.error("i18n initialization failed", error);
+	});
+
+	const rootContainer = document.getElementById("root");
+	if (!rootContainer) throw new Error("Can't find root element");
+
+	createRoot(rootContainer).render(
+		<ReactQueryProvider>
+			<MantineProvider>
+				<RouterProvider router={router} />
+			</MantineProvider>
+		</ReactQueryProvider>
+	);
+
+	logger.info("App started");
+}
+
+window.onload = bootstrap;

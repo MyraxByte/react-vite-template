@@ -1,30 +1,43 @@
 {
-    "compilerOptions": {
-        "target": "ESNext",
-        "useDefineForClassFields": true,
-        "lib": ["ESNext", "DOM", "DOM.Iterable"],
-        "module": "ESNext",
-        "skipLibCheck": true,
-
-        /* Bundler mode */
-        "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "noEmit": true,
-        "jsx": "react-jsx",
-
-        /* Linting */
-        "strict": true,
-        "strictNullChecks": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true,
-        "baseUrl": ".",
-        "paths": {
-            "@/*": ["src/*"]
-        }
-    },
-    "include": ["./src/**/*"],
-    "references": [{ "path": "./tsconfig.node.json" }]
+	"compilerOptions": {
+		"target": "esnext",
+		"types": [
+			"vite/client"
+		],
+		"lib": [
+			"esnext",
+			"dom",
+			"dom.iterable"
+		],
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"noFallthroughCasesInSwitch": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"noEmit": true,
+		"allowJs": true,
+		"jsx": "react-jsx",
+		"strictNullChecks": true,
+		"isolatedModules": true,
+		"paths": {
+			"@/*": [
+				"./src/*"
+			]
+		}
+	},
+	"include": [
+		"src/**/*",
+		"src/types/**/*",
+		"locales/**/*",
+		"eslint.config.ts",
+		"postcss.config.ts",
+		"vite.config.ts"
+	],
+	"exclude": [
+		"node_modules"
+	],
 }
