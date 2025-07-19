@@ -36,6 +36,10 @@ export interface EndpointDescriptor<P = any, B = any> {
 	 */
 	defaultDelayMs?: number;
 	/**
+	 * Request timeout in milliseconds.
+	 */
+	timeout?: number;
+	/**
 	 * AbortSignal used to cancel the request when necessary.
 	 */
 	abortSignal?: AbortSignal;
@@ -46,6 +50,19 @@ export interface EndpointDescriptor<P = any, B = any> {
 	onDownloadProgress?: (event: AxiosProgressEvent) => void;
 	/** Axios responseType override (e.g. 'blob' for downloads) */
 	responseType?: AxiosRequestConfig["responseType"];
+
+	/** Retry configuration for this endpoint */
+	retryConfig?: {
+		attempts: number;
+		delay: number;
+		backoffMultiplier: number;
+		retryOn: number[];
+	};
+
+	/** Request interceptor for this specific endpoint */
+	requestInterceptor?: (config: AxiosRequestConfig) => AxiosRequestConfig | Promise<AxiosRequestConfig>;
+	/** Response interceptor for this specific endpoint */
+	responseInterceptor?: (response: AxiosResponse) => AxiosResponse | Promise<AxiosResponse>;
 }
 
 /**
@@ -66,6 +83,19 @@ export interface ExecuteOptions {
 	 * AbortSignal to cancel this specific request execution.
 	 */
 	signal?: AbortSignal;
+	/**
+	 * Retry configuration for failed requests.
+	 */
+	retry?: {
+		/** Number of retry attempts (default: 0) */
+		attempts?: number;
+		/** Delay between retries in ms (default: 1000) */
+		delay?: number;
+		/** Exponential backoff multiplier (default: 2) */
+		backoffMultiplier?: number;
+		/** HTTP status codes that should trigger a retry */
+		retryOn?: number[];
+	};
 }
 
 /**
@@ -121,12 +151,44 @@ export interface AuthInterceptorConfig {
 export class ApiClient {
 	private readonly axiosInstance: AxiosInstance;
 	private static readonly defaultInstance: AxiosInstance = axios.create();
+	private refreshPromise: Promise<AuthPayload> | null = null;
 
 	/**
 	 * @param baseURL Base URL for all requests made by this client instance.
 	 */
 	constructor(baseURL: string) {
 		this.axiosInstance = axios.create({ baseURL });
+	}
+
+	/**
+	 * Get the base URL for this client.
+	 */
+	public getBaseURL(): string | undefined {
+		return this.axiosInstance.defaults.baseURL;
+	}
+
+	/**
+	 * Create a full URL by combining base URL with route and params.
+	 * @param route The route to append to base URL
+	 * @param params Optional query parameters
+	 */
+	public buildURL(route: string, params?: Record<string, unknown>): string {
+		const baseURL = this.getBaseURL() || "";
+		const url = new URL(route, baseURL);
+
+		if (params) {
+			Object.entries(params).forEach(([key, value]) => {
+				if (value !== null && value !== undefined) {
+					if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+						url.searchParams.append(key, String(value));
+					} else if (typeof value === "object") {
+						url.searchParams.append(key, JSON.stringify(value));
+					}
+				}
+			});
+		}
+
+		return url.toString();
 	}
 
 	/**
@@ -153,6 +215,51 @@ export class ApiClient {
 	}
 
 	/**
+	 * Create a GET request endpoint.
+	 * @template TResponse - Expected response data type
+	 * @param route URL or route for the endpoint
+	 */
+	public get<TResponse = any>(route: string): EndpointBuilder<TResponse> {
+		return this.endpoint<TResponse>({ method: "GET", route });
+	}
+
+	/**
+	 * Create a POST request endpoint.
+	 * @template TResponse - Expected response data type
+	 * @param route URL or route for the endpoint
+	 */
+	public post<TResponse = any>(route: string): EndpointBuilder<TResponse> {
+		return this.endpoint<TResponse>({ method: "POST", route });
+	}
+
+	/**
+	 * Create a PUT request endpoint.
+	 * @template TResponse - Expected response data type
+	 * @param route URL or route for the endpoint
+	 */
+	public put<TResponse = any>(route: string): EndpointBuilder<TResponse> {
+		return this.endpoint<TResponse>({ method: "PUT", route });
+	}
+
+	/**
+	 * Create a DELETE request endpoint.
+	 * @template TResponse - Expected response data type
+	 * @param route URL or route for the endpoint
+	 */
+	public delete<TResponse = any>(route: string): EndpointBuilder<TResponse> {
+		return this.endpoint<TResponse>({ method: "DELETE", route });
+	}
+
+	/**
+	 * Create a PATCH request endpoint.
+	 * @template TResponse - Expected response data type
+	 * @param route URL or route for the endpoint
+	 */
+	public patch<TResponse = any>(route: string): EndpointBuilder<TResponse> {
+		return this.endpoint<TResponse>({ method: "PATCH", route });
+	}
+
+	/**
 	 * Configure automatic token refresh and auth header application
 	 * via request/response interceptors.
 	 * @param cfg AuthInterceptorConfig with callback implementations
@@ -168,16 +275,25 @@ export class ApiClient {
 				let token = auth;
 
 				try {
-
 					// Refresh if expired
 					if (auth.expiresAt <= now) {
-						console.debug("Access token expired, refreshing...");
-						token = await cfg.refreshTokens(auth);
+						// Use existing promise if refresh is already in progress
+						if (!this.refreshPromise) {
+							if (typeof console !== "undefined" && console.debug) {
+								console.debug("Access token expired, refreshing...");
+							}
+							this.refreshPromise = cfg.refreshTokens(auth).finally(() => {
+								this.refreshPromise = null;
+							});
+						}
+						token = await this.refreshPromise;
 						await cfg.setAuthPayload(token);
 					}
 					cfg.applyAuthHeader(req as RetriableRequestConfig, token);
 				} catch (err) {
-					console.error("Failed to refresh token", err);
+					if (typeof console !== "undefined" && console.error) {
+						console.error("Failed to refresh token", err);
+					}
 					await cfg.clearAuthPayload();
 				}
 
@@ -196,13 +312,17 @@ export class ApiClient {
 					const auth = await cfg.getAuthPayload();
 					if (auth) {
 						try {
-							console.debug("Refreshing token on 401 response...");
+							if (typeof console !== "undefined" && console.debug) {
+								console.debug("Refreshing token on 401 response...");
+							}
 							const fresh = await cfg.refreshTokens(auth);
 							await cfg.setAuthPayload(fresh);
 							cfg.applyAuthHeader(original, fresh);
 							return this.axiosInstance.request(original);
 						} catch (err) {
-							console.error("Failed to refresh token", err);
+							if (typeof console !== "undefined" && console.error) {
+								console.error("Failed to refresh token", err);
+							}
 							await cfg.clearAuthPayload();
 						}
 					}
@@ -250,11 +370,43 @@ export class EndpointBuilder<TResponse = any> {
 	}
 
 	/**
+	 * Append query parameters to existing ones.
+	 * @param params Key-value map of query parameters to append
+	 */
+	public addParams(params: Record<string, unknown>): this {
+		this.descriptor.params = { ...this.descriptor.params, ...params };
+		return this;
+	}
+
+	/**
+	 * Add a single query parameter.
+	 * @param key Parameter name
+	 * @param value Parameter value
+	 */
+	public param(key: string, value: unknown): this {
+		this.descriptor.params = { ...this.descriptor.params, [key]: value };
+		return this;
+	}
+
+	/**
 	 * Attach a JSON body to the request.
 	 * @param body Request payload object
 	 */
 	public body(body: Record<string, unknown>): this {
 		this.descriptor.body = body;
+		return this;
+	}
+
+	/**
+	 * Attach a JSON body with automatic Content-Type header.
+	 * @param data Request payload object
+	 */
+	public json(data: Record<string, unknown>): this {
+		this.descriptor.body = data;
+		this.headers({
+			...this.descriptor.headers,
+			"Content-Type": "application/json"
+		});
 		return this;
 	}
 
@@ -284,7 +436,18 @@ export class EndpointBuilder<TResponse = any> {
 	 * @param delayMs Delay duration in milliseconds
 	 */
 	public delay(delayMs: number): this {
+		if (delayMs < 0) throw new Error("Delay must be non-negative");
 		this.descriptor.defaultDelayMs = delayMs;
+		return this;
+	}
+
+	/**
+	 * Set request timeout in milliseconds.
+	 * @param timeoutMs Timeout duration in milliseconds
+	 */
+	public timeout(timeoutMs: number): this {
+		if (timeoutMs <= 0) throw new Error("Timeout must be positive");
+		this.descriptor.timeout = timeoutMs;
 		return this;
 	}
 
@@ -327,30 +490,125 @@ export class EndpointBuilder<TResponse = any> {
 		return this;
 	}
 
-	public upload(fieldName: string, file: Blob | File | Buffer, extraData?: Record<string, any>): this {
+	/**
+	 * Configure retry behavior for this endpoint.
+	 * @param attempts Number of retry attempts (default: 3)
+	 * @param delayMs Base delay between retries in ms (default: 1000)
+	 * @param backoffMultiplier Exponential backoff multiplier (default: 2)
+	 * @param retryOn HTTP status codes that should trigger a retry
+	 */
+	public retry(
+		attempts: number = 3,
+		delayMs: number = 1000,
+		backoffMultiplier: number = 2,
+		retryOn: number[] = [408, 429, 500, 502, 503, 504]
+	): this {
+		if (attempts < 0) throw new Error("Retry attempts must be non-negative");
+		if (delayMs < 0) throw new Error("Retry delay must be non-negative");
+		if (backoffMultiplier < 1) throw new Error("Backoff multiplier must be >= 1");
+
+		this.descriptor.retryConfig = {
+			attempts,
+			delay: delayMs,
+			backoffMultiplier,
+			retryOn
+		};
+		return this;
+	}
+
+	public upload(fieldName: string, file: Blob | File, extraData?: Record<string, any>): this {
+		if (!file) throw new Error("File is required for upload");
+
 		const form = new FormData();
-		form.append(fieldName, file as Blob);
-		if (extraData) Object.entries(extraData).forEach(([k, v]) => form.append(k, String(v)));
+		form.append(fieldName, file);
+		if (extraData) {
+			Object.entries(extraData).forEach(([k, v]) => {
+				if (v !== null && v !== undefined) {
+					form.append(k, String(v));
+				}
+			});
+		}
 		this.descriptor.body = form as any;
-		this.headers({ ...this.descriptor.headers, "Content-Type": "multipart/form-data" });
+		// Don't set Content-Type header - let browser set it with boundary
 		return this;
 	}
 
 	/**
-	 * Cross-platform download: fetches Blob/Buffer and returns it.
-	 * In browser, optionally auto-saves if `autoSave` is true.
+	 * Create form data request with multiple fields.
+	 * @param data Key-value pairs for form fields
 	 */
+	public form(data: Record<string, string | number | boolean | Blob | File>): this {
+		const form = new FormData();
+		Object.entries(data).forEach(([key, value]) => {
+			if (value !== null && value !== undefined) {
+				if (typeof value === "object" &&
+					((typeof Blob !== "undefined" && value instanceof Blob) ||
+					(typeof File !== "undefined" && value instanceof File))) {
+					form.append(key, value as Blob);
+				} else if (typeof value !== "object") {
+					form.append(key, String(value));
+				}
+			}
+		});
+		this.descriptor.body = form as any;
+		return this;
+	}
+
 	/**
-	 * Cross-platform download: fetches Blob/Buffer and returns it.
+	 * Add a request interceptor for this specific endpoint.
+	 * @param interceptor Function to modify the request config before sending
+	 */
+	public onRequest(interceptor: (config: AxiosRequestConfig) => AxiosRequestConfig | Promise<AxiosRequestConfig>): this {
+		this.descriptor.requestInterceptor = interceptor;
+		return this;
+	}
+
+	/**
+	 * Add a response interceptor for this specific endpoint.
+	 * @param interceptor Function to modify the response after receiving
+	 */
+	public onResponse(interceptor: (response: AxiosResponse) => AxiosResponse | Promise<AxiosResponse>): this {
+		this.descriptor.responseInterceptor = interceptor;
+		return this;
+	}
+
+	/**
+	 * Enable request/response logging for debugging.
+	 * @param enabled Whether to enable logging (default: true)
+	 */
+	public debug(enabled: boolean = true): this {
+		if (enabled) {
+			this.onRequest((config) => {
+				if (typeof console !== "undefined" && console.log) {
+					console.log(`🚀 ${config.method?.toUpperCase()} ${config.url}`, {
+						params: config.params,
+						data: config.data,
+						headers: config.headers
+					});
+				}
+				return config;
+			});
+
+			this.onResponse((response) => {
+				if (typeof console !== "undefined" && console.log) {
+					console.log(`✅ ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url}`, response.data);
+				}
+				return response;
+			});
+		}
+		return this;
+	}
+
+	/**
+	 * Cross-platform download: fetches Blob and returns it.
 	 * In browser, optionally auto-saves if `autoSave` is true.
 	 */
-	public async download(options?: { filename?: string; autoSave?: boolean }): Promise<Blob | Buffer> {
+	public async download(options?: { filename?: string; autoSave?: boolean }): Promise<Blob> {
 		this.responseType("blob");
-		// Force the execute result to Blob|Buffer via cast
-		const data = await this.execute() as unknown as Blob | Buffer;
+		// Force the execute result to Blob via cast
+		const data = await this.execute() as unknown as Blob;
 		if (options?.autoSave && typeof document !== "undefined") {
-			const blob = data as Blob;
-			const url = URL.createObjectURL(blob);
+			const url = URL.createObjectURL(data);
 			const a = document.createElement("a");
 			a.href = url;
 			a.download = options.filename || "download";
@@ -367,11 +625,11 @@ export class EndpointBuilder<TResponse = any> {
 	 * Execute the configured request, using mock data if requested,
 	 * applying delays, cancellation, and projecting the response.
 	 *
-	 * @param options Execution-specific overrides (mock, delay, signal)
+	 * @param options Execution-specific overrides (mock, delay, signal, retry)
 	 * @returns Either the mock or real response data, possibly transformed
 	 */
 	public async execute(options?: ExecuteOptions): Promise<TResponse> {
-		const { mock, delayMs, signal } = options || {};
+		const { mock, delayMs, signal, retry } = options || {};
 		const canMock = this.descriptor.mockData !== undefined;
 		const shouldMock = mock !== undefined ? mock : canMock;
 
@@ -396,27 +654,82 @@ export class EndpointBuilder<TResponse = any> {
 			params: this.descriptor.params,
 			data: this.descriptor.body,
 			headers: this.descriptor.headers,
-			signal: requestSignal
+			signal: requestSignal,
+			onUploadProgress: this.descriptor.onUploadProgress,
+			onDownloadProgress: this.descriptor.onDownloadProgress,
+			responseType: this.descriptor.responseType,
+			timeout: this.descriptor.timeout
 		};
 
-		try {
-			// Apply any execution or default delay before sending
-			const effectiveDelay = delayMs ?? this.descriptor.defaultDelayMs;
-			if (effectiveDelay) await delay(effectiveDelay);
+		const retryConfig = {
+			attempts: retry?.attempts ?? this.descriptor.retryConfig?.attempts ?? 0,
+			delay: retry?.delay ?? this.descriptor.retryConfig?.delay ?? 1000,
+			backoffMultiplier: retry?.backoffMultiplier ?? this.descriptor.retryConfig?.backoffMultiplier ?? 2,
+			retryOn: retry?.retryOn ?? this.descriptor.retryConfig?.retryOn ?? [408, 429, 500, 502, 503, 504]
+		};
 
-			// Perform HTTP request
-			const response: AxiosResponse<TResponse> = await instance.request(config);
-			const data = response.data;
-			return this.selectFn ? this.selectFn(data) : data;
-		} catch (error) {
-			// Handle cancellation vs. other errors
-			if ((error as any).name === "CanceledError" || (error as any).code === "ERR_CANCELED") {
-				console.info(`Request canceled: ${this.descriptor.method} ${this.descriptor.route}`);
-			} else {
-				console.error(`Request failed: ${this.descriptor.method} ${this.descriptor.route}`, error as AxiosError);
+		let lastError: any;
+
+		for (let attempt = 0; attempt <= retryConfig.attempts; attempt++) {
+			try {
+				// Apply any execution or default delay before sending
+				const effectiveDelay = delayMs ?? this.descriptor.defaultDelayMs;
+				if (effectiveDelay) await delay(effectiveDelay);
+
+				// Apply request interceptor if defined
+				let finalConfig = config;
+				if (this.descriptor.requestInterceptor) {
+					finalConfig = await this.descriptor.requestInterceptor(config);
+				}
+
+				// Perform HTTP request
+				let response: AxiosResponse<TResponse> = await instance.request(finalConfig);
+
+				// Apply response interceptor if defined
+				if (this.descriptor.responseInterceptor) {
+					response = await this.descriptor.responseInterceptor(response);
+				}
+
+				const data = response.data;
+				return this.selectFn ? this.selectFn(data) : data;
+			} catch (error) {
+				lastError = error;
+
+				// Handle cancellation immediately without retry
+				if ((error as any).name === "CanceledError" || (error as any).code === "ERR_CANCELED") {
+					if (typeof console !== "undefined" && console.info) {
+						console.info(`Request canceled: ${this.descriptor.method} ${this.descriptor.route}`);
+					}
+					throw error;
+				}
+
+				// Check if this is a retryable error
+				const axiosError = error as AxiosError;
+				const isHttpError = axiosError.response?.status &&
+					retryConfig.retryOn.includes(axiosError.response.status);
+				const isNetworkError = !axiosError.response &&
+					(axiosError.code === "ECONNRESET" ||
+					 axiosError.code === "ETIMEDOUT" ||
+					 axiosError.code === "ENOTFOUND" ||
+					 axiosError.code === "ECONNREFUSED");
+
+				const shouldRetry = attempt < retryConfig.attempts && (isHttpError || isNetworkError);
+
+				if (!shouldRetry) {
+					break;
+				}
+
+				// Wait before retry with exponential backoff
+				const retryDelay = retryConfig.delay * Math.pow(retryConfig.backoffMultiplier, attempt);
+				await delay(retryDelay);
 			}
-			throw error;
 		}
+
+		// Log final error
+		if (typeof console !== "undefined" && console.error) {
+			console.error(`Request failed: ${this.descriptor.method} ${this.descriptor.route}`, lastError as AxiosError);
+		}
+		throw lastError;
 	}
 }
 
