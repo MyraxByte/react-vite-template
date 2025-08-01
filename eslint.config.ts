@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import pluginRouter from "@tanstack/eslint-plugin-router";
 import { globalIgnores } from "eslint/config";
 import react from "eslint-plugin-react";
 import * as reactHooks from "eslint-plugin-react-hooks";
@@ -15,6 +16,8 @@ export default tseslint.config(
 		"dist/",
 		"build/",
 		"coverage/",
+		".tanstack/",
+		".react-router/",
 	]),
 
 	// 2. Base JavaScript
@@ -39,7 +42,8 @@ export default tseslint.config(
 	reactHooks.configs["recommended-latest"],
 
 	// 5. Additional plugins
-	...(process.env.NODE_ENV === "development" ? [reactRefresh.configs.recommended] : []),
+	...pluginRouter.configs["flat/recommended"],
+	reactRefresh.configs.vite,
 
 	{
 		plugins: {
@@ -56,6 +60,7 @@ export default tseslint.config(
 			"react-hooks/rules-of-hooks": "error",
 			"react-hooks/exhaustive-deps": "error",
 			"react-hooks/react-compiler": "error",
+			"@typescript-eslint/only-throw-error": "off",
 
 			// eslint-disable-next-line no-irregular-whitespace
 			/* ------- Import Sorting & Cleanup ---- */
@@ -78,11 +83,12 @@ export default tseslint.config(
 			"@typescript-eslint/no-unsafe-call": "off",
 			"no-unused-vars": "off",
 			"@typescript-eslint/no-unused-vars": "off",
-			"@typescript-eslint/no-misused-promises": "off"
+			"@typescript-eslint/no-misused-promises": "off",
+			"@typescript-eslint/consistent-type-exports": "error",
+			"@typescript-eslint/consistent-type-imports": "error"
 
 		},
 		settings: { react: { version: "detect" } },
-
 	},
 
 	// 6. Special import groups for src/**

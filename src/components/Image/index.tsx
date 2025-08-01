@@ -1,4 +1,6 @@
-import React, { forwardRef, ImgHTMLAttributes } from "react";
+import type { ImgHTMLAttributes } from "react";
+import type React from "react";
+import { forwardRef } from "react";
 
 import { useImage } from "./useImage";
 

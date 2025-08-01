@@ -1,4 +1,76 @@
-HelloWorld:
-    greeting: "Hello, World!"
-    welcome_message: "Welcome to our application!"
-    description: "This is a sample application to demonstrate localization."
+auth:
+    login:
+        title: "Login to AI Dashboard"
+        subtitle: "Please enter your credentials to access the dashboard."
+        email: "Email"
+        password: "Password"
+        submit: "Log In"
+    logout:
+        tooltip: "Log Out"
+        buttonText: "Log Out"
+
+footer:
+    rightsReserved: "All rights reserved."
+    appName: "AI Dashboard"
+
+sidebar:
+    overview: "Overview"
+    streamers: "Streamers"
+    liveBroadcasts: "Live Broadcasts"
+
+app_info:
+    version: "Version"
+    buildDate: "Build Date"
+    commitHash: "Commit Hash"
+    environment: "Environment"
+    title: "App Information"
+    tooltip: "App Info"
+
+under_development:
+    title: "Under Development"
+    message: "This feature is currently under development."
+
+userInfo:
+    copyUserId: "Copy User ID"
+
+settings:
+    backButton: "Back to Dashboard"
+    sessions:
+        title: "Sessions"
+        description: "Manage your active sessions and devices."
+
+error:
+    title:
+        network: "Connection Problem"
+        permission: "Access Denied"
+        notFound: "Page Not Found"
+        default: "Something Went Wrong"
+    description:
+        network: "Unable to connect to the server. Please check your internet connection and try again."
+        permission: "You don't have permission to access this resource. Please contact your administrator."
+        notFound: "The page you're looking for doesn't exist or has been moved."
+        default: "An unexpected error occurred. Please try again or contact support if the problem persists."
+    message:
+        network: "NetworkError: Failed to fetch data from server"
+        permission: "403 Forbidden: Access denied to this resource"
+        notFound: "404 Not Found: The requested resource could not be found"
+        default: "Error: An unexpected error occurred"
+    buttons:
+        tryAgain: "Try Again"
+        goHome: "Go to Dashboard"
+        techDetails: "Technical Details"
+        copy: "Copy"
+        copied: "Copied!"
+        goBack: "Go Back"
+    stackTrace: "Stack Trace:"
+    componentStack: "Component Stack:"
+    supportMessage: "If you believe this is an error, please contact support or try refreshing the page."
+
+notFound:
+    title: "Page Not Found"
+    description: "The page you're looking for doesn't exist or has been moved to a different location."
+    message: "Error 404: The requested resource could not be found"
+    buttons:
+        goToDashboard: "Go to Dashboard"
+        goBack: "Go Back"
+    supportMessage: "If you believe this is an error, please contact support or try refreshing the page."

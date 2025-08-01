@@ -5,19 +5,19 @@ import { APP_ENV, ENV_TYPES } from "./env";
 // Define the configuration for each environment
 const DEV_CONFIG = {
 	servers: {
-		api: "https://api.example.com/api/v1"
+		api: "https://api-develop.example.com/api/v1/"
 	},
-	authToken: "{{projectName}}:auth:accessToken",
+	authToken: "cordy:admin:auth",
 };
 
 const STAGING_CONFIG = toMerged(DEV_CONFIG, {
 	servers: {
-		api: "https://api.example.com/api/v1"
+		api: "https://api-staging.example.com/api/v1/"
 	},
 });
 const PROD_CONFIG = toMerged(DEV_CONFIG, {
 	servers: {
-		api: "https://api.example.com/api/v1",
+		api: "https://api.example.com/api/v1/",
 	}
 });
 const ENV_CONFIGS: Record<ENV_TYPES, typeof DEV_CONFIG> = {

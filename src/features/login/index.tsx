@@ -3,6 +3,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { TextInput } from "@mantine/core";
 
 import useLoginForm from "@/features/login/hooks/useLoginForm";
+import { i18n } from "@/lib/i18n";
 
 import useLogin from "./hooks/useLogin";
 
@@ -17,8 +18,8 @@ export default function LoginForm() {
 
 			<Controller control={form.control} name="email" render={({ field, fieldState }) => (
 				<div className="space-y-2">
-					<label htmlFor="email" className="block text-sm font-medium dark:text-gray-200 light:text-gray-700">
-						Email
+					<label htmlFor="email" className="block text-sm font-medium dark:text-gray-200">
+						{i18n.t("auth.login.email")}
 					</label>
 
 					<TextInput
@@ -31,11 +32,11 @@ export default function LoginForm() {
 						leftSection={
 							<Icon
 								icon="fluent:mention-16-regular"
-								className="w-[24px] h-[24px] dark:text-gray-400 light:text-gray-500"
+								className="w-[24px] h-[24px] dark:text-gray-400"
 							/>
 						}
 						classNames={{
-							input: "mt-1 h-[42px] pl-[40px] block w-full rounded-md border dark:border-gray-600 light:border-gray-200 dark:bg-gray-700 light:bg-white px-3 py-2 dark:text-white light:text-gray-900 dark:placeholder-gray-400 light:placeholder-gray-500 dark:shadow-sm light:shadow-none focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500",
+							input: "mt-1 h-[42px] pl-[40px] block w-full rounded-md border dark:border-gray-600 dark:bg-gray-700 px-3 py-2 dark:text-white dark:placeholder-gray-400 dark:shadow-sm focus:border-[hsl(212,100%,40%)] focus:outline-none focus:ring-1 focus:ring-[hsl(212,100%,40%)]",
 							wrapper: "w-full",
 							root: "w-full",
 							section: "flex items-center justify-center w-[40px] h-[40px] pointer-events-none",
@@ -53,8 +54,8 @@ export default function LoginForm() {
 
 			<Controller control={form.control} name="password" render={({ field, fieldState }) => (
 				<div className="space-y-2">
-					<label htmlFor="password" className="block text-sm font-medium dark:text-gray-200 light:text-gray-700">
-						Password
+					<label htmlFor="password" className="block text-sm font-medium dark:text-gray-200">
+						{i18n.t("auth.login.password")}
 					</label>
 
 					<TextInput
@@ -65,10 +66,10 @@ export default function LoginForm() {
 						value={field.value}
 						onChange={(value) => field.onChange(value.target.value)}
 						leftSection={
-							<Icon icon="fluent:key-16-regular" className="w-[24px] h-[24px] dark:text-gray-400 light:text-gray-500" />
+							<Icon icon="fluent:key-16-regular" className="w-[24px] h-[24px] dark:text-gray-400 " />
 						}
 						classNames={{
-							input: "mt-1 h-[42px] pl-[40px] block w-full rounded-md border dark:border-gray-600 light:border-gray-200 dark:bg-gray-700 light:bg-white px-3 py-2 dark:text-white light:text-gray-900 dark:placeholder-gray-400 light:placeholder-gray-500 dark:shadow-sm light:shadow-none focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500",
+							input: "mt-1 h-[42px] pl-[40px] block w-full rounded-md border dark:border-gray-600 dark:bg-gray-700 px-3 py-2 dark:text-white dark:placeholder-gray-400 dark:shadow-sm focus:border-[hsl(212,100%,40%)] focus:outline-none focus:ring-1 focus:ring-[hsl(212,100%,40%)]",
 							wrapper: "w-full",
 							root: "w-full",
 							section: "flex items-center justify-center w-[40px] h-[40px] pointer-events-none",
@@ -86,12 +87,12 @@ export default function LoginForm() {
 				<button
 					type="submit"
 					disabled={(form.formState.isSubmitting || !form.formState.isDirty) ? true : false}
-					className="flex items-center justify-center h-[42px] relative gap-2 rounded-sm shadow-sm cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-500/75 active:bg-blue-500/50 disabled:opacity-50 disabled:cursor-default disabled:bg-blue-500 disabled:hover:bg-blue-500"
+					className="flex items-center justify-center h-[42px] relative gap-2 rounded-md shadow-sm cursor-pointer px-4 py-2 text-sm font-medium text-white bg-[hsl(212,100%,32%)] hover:bg-[hsl(212,100%,40%)] active:bg-[hsl(212,100%,28%)] disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-[hsl(212,100%,32%)] disabled:hover:bg-[hsl(212,100%,32%)]"
 				>
 					{(isLoading || form.formState.isSubmitting) ? (
 						<div className="absolute left-4 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
 					) : null}
-					Log In
+					{i18n.t("auth.login.submit")}
 				</button>
 			</div>
 		</form>

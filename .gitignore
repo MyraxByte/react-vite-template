@@ -25,3 +25,5 @@ app.json
 *.njsproj
 *.sln
 *.sw?
+.tanstack/
+.react-router/

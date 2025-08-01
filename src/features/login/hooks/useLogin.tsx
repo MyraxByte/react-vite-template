@@ -1,58 +1,49 @@
-import { useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 
 import { CONFIG } from "@/constants/config";
-import { queryClient } from "@/constants/providers";
+import { authQueries } from "@/features/auth/queries";
 import { logger } from "@/lib";
 import Storage from "@/lib/storage";
-import { getStore } from "@/store";
 
-import { fetchUser } from "../api/fetchUser";
 import { logIn } from "../api/logIn";
-import { LOGIN_QUERY_KEY } from "../constants/queries";
-import { LoginDto } from "../validation/login";
+import type { LoginDto } from "../validation/login";
 
-export default function useLogin(enabled: boolean = true) {
-	const loadUser = () => fetchUser();
+export default function useLogin() {
+	const router = useRouter();
+	const queryClient = useQueryClient();
 
-	const { data, isLoading, isPending, isFetching, error, refetch } = useQuery({
-		queryKey: [LOGIN_QUERY_KEY],
-		queryFn: () => loadUser(),
-		enabled,
+	const mutation = useMutation({
+		mutationFn: async (values: LoginDto) => {
+			try {
+				const result = await logIn(values);
+				if (!result.accessToken) throw new Error("No access token found");
+
+				Storage.set(CONFIG.authToken, result);
+
+				// ВАЖНО: принудительно актуализируем «кто я» до навигации
+				// Вариант А: просто перезапрашиваем
+				await queryClient.invalidateQueries({ queryKey: authQueries.key });
+				await queryClient.refetchQueries({ queryKey: authQueries.key });
+
+				// (Опционально) если логин API возвращает пользователя —
+				// можно сразу оптимистично положить его в кеш:
+				// queryClient.setQueryData(authQueries.user().queryKey, result.user)
+
+				await router.invalidate();
+				await router.navigate({ to: "/dashboard/overview", replace: true });
+			} catch (error) {
+				logger.error("Login error:", error instanceof Error ? error.message : String(error));
+				throw error;
+			}
+		},
+
 	});
 
-	const login = useCallback(async (values: LoginDto) => {
-		const auth = getStore().auth;
-		try {
-			const result = await logIn(values);
-			if (!result.accessToken)
-				throw new Error("No access token found");
-
-			Storage.set(CONFIG.authToken, result);
-
-			const user = await fetchUser();
-			if (!user) throw new Error("No user found");
-
-			queryClient.setQueryData([LOGIN_QUERY_KEY], user);
-
-			auth.setUser(user);
-			auth.setAuthorized(true);
-		} catch (error) {
-			logger.error("Login error:", error instanceof Error ? error.message : String(error));
-			auth.setUser(null);
-			auth.setAuthorized(false);
-			throw error;
-		}
-	}, []);
-
 	return {
-		user: data,
-		error,
-		isLoading,
-		isFetching,
-		isPending,
-		refetch,
-		login,
-		fetch: () => loadUser(),
+		login: mutation.mutateAsync,
+		isLoading: mutation.isPending,
+		isError: mutation.isError,
+		error: mutation.error,
 	};
 }

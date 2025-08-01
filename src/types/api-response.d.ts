@@ -13,3 +13,12 @@ export type ApiPaginatedQuery = {
 	skip: number;
 	limit: number;
 };
+
+
+export interface IAuthResult {
+	accessToken: string;
+	refreshToken: string;
+	expiresAt: number;
+	sessionId: string;
+	userId: string;
+}

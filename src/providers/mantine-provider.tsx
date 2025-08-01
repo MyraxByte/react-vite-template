@@ -1,5 +1,6 @@
-import { PropsWithChildren } from "react";
-import { createTheme, MantineProvider as MantineLibProvider, MantineProviderProps } from "@mantine/core";
+import type { PropsWithChildren } from "react";
+import type { MantineProviderProps } from "@mantine/core";
+import { createTheme, MantineProvider as MantineLibProvider } from "@mantine/core";
 import { DatesProvider } from "@mantine/dates";
 import { Toaster } from "sonner";
 

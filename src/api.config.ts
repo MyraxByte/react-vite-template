@@ -1,62 +1,73 @@
 
-import { CONFIG } from "@/constants/config";
-import { ApiClient, AuthPayload } from "@/lib";
+import type {AuthStrategy, HttpHeaders} from "@cordy/endpoint-builder";
+import { HttpClient, JitteredExponentialBackoffRetryStrategy} from "@cordy/endpoint-builder";
 
-import { ILoginResult } from "./features/login/interfaces/login";
+import { CONFIG } from "@/constants/config";
+
+import type { ILoginResult } from "./features/login/interfaces/login";
 import Storage from "./lib/storage";
-import { ApiResponse } from "./types/api-response";
+import type { ApiResponse, IAuthResult } from "./types/api-response";
+
+
+
+/**
+ * ==========================================
+ * Authentication Strategy
+ * ==========================================
+ */
+class SessionStrategy implements AuthStrategy {
+
+	async enrich(): Promise<Partial<HttpHeaders>> {
+		const result = Storage.get<IAuthResult>(CONFIG.authToken);
+
+		return Promise.resolve(result?.accessToken ? {
+			Authorization: `Bearer ${result.accessToken}`,
+		} : {});
+	}
+
+	async refresh(_req: Request, res: Response): Promise<boolean> {
+		if (res.status !== 401 && res.status !== 403) return false;
+		const tokens = Storage.get<IAuthResult>(CONFIG.authToken);
+		if (!tokens?.refreshToken) return false;
+
+		const response = await fetch(CONFIG.servers.api + "oauth/token", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				grantType: "refresh_token",
+				accountType: "admin",
+				refreshToken: tokens.refreshToken
+			}),
+		});
+
+		if (!response.ok) {
+			if (response.status === 401 || response.status === 403) {
+				Storage.remove(CONFIG.authToken);
+			}
+			return false;
+		}
+		const json = (await response.json()) as ApiResponse<ILoginResult>;
+		if (!json || !json.data.accessToken || !json.data.refreshToken) return false;
+
+		Storage.set(CONFIG.authToken, {
+			accessToken: json.data.accessToken,
+			refreshToken: json.data.refreshToken,
+			expiresAt: json.data.expiresAt,
+			tokenType: json.data.tokenType || "Bearer",
+		});
+		return true;
+	}
+}
+
 
 /**
  * ==========================================
  * API Clients
  * ==========================================
  */
-export const api = new ApiClient(CONFIG.servers.api);
-
-
-/**
- * ==========================================
- * Configure API Client
- * ==========================================
- */
-api.addAuthInterceptors({
-	getAuthPayload: () => {
-		const result = Storage.get<AuthPayload>(CONFIG.authToken);
-		return Promise.resolve(result);
-	},
-	setAuthPayload: (payload: AuthPayload) => {
-		Storage.set(CONFIG.authToken, payload);
-		return Promise.resolve();
-	},
-	clearAuthPayload: () => {
-		Storage.remove(CONFIG.authToken);
-		return Promise.resolve();
-	},
-	applyAuthHeader: (request, payload) => {
-		if (payload && payload.accessToken) {
-			request.headers = {
-				...request.headers,
-				Authorization: `Bearer ${payload.accessToken}`,
-			};
-		}
-		return Promise.resolve(request);
-	},
-	refreshTokens: async (payload) => {
-		var endpoint = await api.endpoint<ApiResponse<ILoginResult>>({
-			method: "POST",
-			route: "/oauth/token",
-			body: {
-				grantType: "refresh_token",
-				accountType: "admin",
-				refreshToken: payload.refreshToken
-			},
-		}).select(res => res.data).execute();
-
-		return {
-			accessToken: endpoint.accessToken,
-			refreshToken: endpoint.refreshToken,
-			expiresAt: endpoint.expiresAt,
-			tokenType: endpoint.tokenType,
-		};
-	},
+export const api = new HttpClient({
+	baseUrl: CONFIG.servers.api,
+	dedupe: true,
+	retryStrategy: new JitteredExponentialBackoffRetryStrategy(3, 300, 10000),
+	auth: new SessionStrategy(),
 });

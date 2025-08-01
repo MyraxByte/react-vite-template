@@ -9,6 +9,9 @@
 			"dom",
 			"dom.iterable"
 		],
+		"rootDirs": [
+			"."
+		],
 		"skipLibCheck": true,
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
@@ -16,6 +19,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"noFallthroughCasesInSwitch": true,
 		"module": "esnext",
+		"verbatimModuleSyntax": true,
 		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"noEmit": true,

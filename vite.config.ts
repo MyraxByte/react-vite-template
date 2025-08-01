@@ -1,16 +1,13 @@
 import * as path from "node:path";
 
+import tailwind from "@tailwindcss/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import checker from "vite-plugin-checker";
 import i18nextLoader from "vite-plugin-i18next-loader";
 import Inspect from "vite-plugin-inspect";
 import svgr from "vite-plugin-svgr";
-
-const ReactCompilerConfig = {
-
-};
-
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
@@ -26,12 +23,16 @@ export default defineConfig(() => {
 		plugins: [
 			Inspect(),
 			svgr(),
+			tailwind(),
+			tanstackRouter({
+				target: "react",
+				autoCodeSplitting: true,
+				routesDirectory: "src/pages",
+			}),
 			react({
 				babel: {
-					plugins: [
-						["babel-plugin-react-compiler", ReactCompilerConfig],
-					],
-				},
+					plugins: [["babel-plugin-react-compiler", {}]]
+				}
 			}),
 			checker({
 				typescript: true,

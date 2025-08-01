@@ -1,1 +1,0 @@
-export const LOGIN_QUERY_KEY = "login";

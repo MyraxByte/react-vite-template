@@ -17,60 +17,85 @@ npm run build:prod
 
 ## 🛠 Tech Stack
 
-- **Frontend**: React 19.1.0, TypeScript 5.8.3
-- **Build Tool**: Vite 7.0.2
-- **UI Framework**: Mantine UI 8.1.3
+- **Frontend**: React 19.1.1, TypeScript 5.8.3
+- **Build Tool**: Vite 7.0.6
+- **UI Framework**: Mantine UI 8.2.2
 - **Styling**: Tailwind CSS 4.1.11
-- **State Management**: Zustand 5.0.6
-- **HTTP Client**: Axios + TanStack Query
-- **Forms**: React Hook Form + Zod validation
-- **Routing**: React Router 7.6.3
-- **i18n**: i18next + react-i18next
+- **State Management**: Zustand 5.0.7 & TanStack Query 5.83.0
+- **HTTP Client**: Endpoint Builder 1.3.0
+- **Forms**: React Hook Form 7.61.1 + Zod 4.0.14 validation
+- **Routing**: TanStack Router 1.130.11
+- **i18n**: i18next 25.3.2 + react-i18next 15.6.1
 
 ## 📁 Project Structure
 
 ```
 src/
-├── components/          # Reusable UI components
-│   ├── Button/
-│   ├── Image/
-│   ├── Loader/
-│   ├── ModalSystem/    # Modal system
-│   └── VersionBadge/
-├── features/           # Business logic by features
-│   ├── login/          # Authentication
-│   │   ├── api/        # API requests
-│   │   ├── components/ # Feature components
-│   │   ├── hooks/      # Custom hooks
-│   │   └── validation/ # Validation schemas
-│   └── sidebar/        # Sidebar
-├── hooks/              # Reusable hooks
+├── assets/             # Static assets (images, icons, styles)
+│   ├── images/         # SVG icons, logos, loaders
+│   └── styles/         # Global CSS files
+├── components/         # Reusable UI components
+│   ├── ErrorComponent.tsx
+│   ├── Image/          # Optimized image component
+│   ├── Loader/         # Loading components
+│   ├── Preloader.tsx
+│   └── VersionBadge/   # Version display
+├── constants/          # Configuration and environment variables
+│   ├── config.ts
+│   └── env.ts
+├── features/           # Feature-based modules
+│   ├── auth/           # Authentication system
+│   │   ├── api/        # Auth API calls
+│   │   ├── hooks/      # Auth-related hooks
+│   │   └── interfaces/ # Auth type definitions
+│   ├── login/          # Login functionality
+│   │   ├── api/        # Login API
+│   │   ├── hooks/      # Login hooks & form logic
+│   │   ├── interfaces/ # Login types
+│   │   └── validation/ # Form validation schemas
+│   ├── logout/         # Logout functionality
+│   ├── modal-system/   # Global modal management
+│   ├── settings-tabs/  # Settings navigation
+│   ├── sidebar/        # Sidebar navigation
+│   └── user-info/      # User information display
 ├── lib/                # Utilities and services
-│   ├── color.ts
-│   ├── logger/         # Logging system
-│   ├── endpoint-builder/ # API endpoint builder
-│   └── qs/            # Query string utilities
-├── pages/              # Application pages
-│   ├── auth/
-│   └── dashboard/
-├── providers/          # React providers
-├── router/             # Routing configuration
-├── store/              # Zustand state management
-└── types/              # TypeScript types
+│   ├── cn.tsx          # Class name utilities
+│   ├── color.ts        # Color utilities
+│   ├── dayjs.ts        # Date formatting
+│   ├── i18n.ts         # Internationalization
+│   ├── logger.ts       # Logging system
+│   ├── storage.ts      # Local storage utilities
+│   └── utils/          # Various utility functions
+├── pages/              # Route pages (TanStack Router)
+│   ├── __root.tsx      # Root layout
+│   ├── auth/           # Authentication pages
+│   ├── dashboard/      # Dashboard pages
+│   └── settings/       # Settings pages
+├── providers/          # React context providers
+│   ├── mantine-provider.tsx
+│   └── query-provider.tsx
+└── types/              # TypeScript type definitions
+    ├── api-response.d.ts
+    ├── global.d.ts
+    ├── utils.d.ts
+    ├── vite-env.d.ts
+    └── vite-virtual.d.ts
 ```
 
 ## 🔧 Available Scripts
 
-| Command                 | Description                               |
-| ----------------------- | ----------------------------------------- |
-| `npm run dev`           | Start development server (localhost:8080) |
-| `npm run prod`          | Start production server                   |
-| `npm run build:dev`     | Build for development                     |
-| `npm run build:staging` | Build for staging                         |
-| `npm run build:prod`    | Build for production (minified)           |
-| `npm run lint`          | Run ESLint                                |
-| `npm run lint:fix`      | Run ESLint with auto-fix                  |
-| `npm run preview`       | Preview production build                  |
+| Command                  | Description                               |
+| ------------------------ | ----------------------------------------- |
+| `npm run dev`            | Start development server (localhost:8080) |
+| `npm run prod`           | Start production server                   |
+| `npm run build:checksum` | Generate checksum before every build      |
+| `npm run build:dev`      | Build for development                     |
+| `npm run build:staging`  | Build for staging                         |
+| `npm run build:prod`     | Build for production (minified)           |
+| `npm run lint`           | Run ESLint                                |
+| `npm run lint:fix`       | Run ESLint with auto-fix                  |
+| `npm run lint-staged`    | Lint only staged files (pre-commit)       |
+| `npm run preview`        | Preview production build                  |
 
 ## 🌐 Environment Configuration
 
@@ -79,9 +104,9 @@ Configure API endpoints and settings in `src/constants/config.ts`:
 ```typescript
 const DEV_CONFIG = {
 	servers: {
-		api: "https://api.example.com/api/v1",
+		api: "https://api-example.com/api/v1/",
 	},
-	authToken: "{{projectName}}:auth:accessToken",
+	authToken: "{project_name}:admin:auth",
 };
 ```
 
@@ -97,14 +122,16 @@ The app uses JWT-based authentication with automatic token refresh:
 
 ```typescript
 // Auth configuration in api.config.ts
-api.addAuthInterceptors({
-	getAuthPayload: () => Storage.get(CONFIG.authToken),
-	setAuthPayload: (payload) => Storage.set(CONFIG.authToken, payload),
-	clearAuthPayload: () => Storage.remove(CONFIG.authToken),
-	refreshTokens: async (payload) => {
-		// Automatic token refresh logic
-	},
-});
+class SessionStrategy implements AuthStrategy {
+	async enrich(): Promise<Partial<HttpHeaders>> {
+		// Authentication header enrichment
+	}
+}
+
+// Storage utilities
+Storage.set(CONFIG.authToken, payload);
+Storage.get(CONFIG.authToken);
+Storage.remove(CONFIG.authToken);
 ```
 
 ## 🎨 UI Components
@@ -126,31 +153,36 @@ export const MyComponent = () => (
 
 All reusable components are in `src/components/`:
 
-- **Button**: Custom button with variants
+- **ErrorComponent**: Error boundary component
 - **Image**: Optimized image component with loading states
 - **Loader**: Loading spinner component
-- **ModalSystem**: Global modal management
+- **NotFoundComponent**: 404 page component
+- **Preloader**: Application preloader
+- **UnderDevelopment**: Development placeholder
 - **VersionBadge**: Version display component
 
 ## 🔄 State Management
 
-Using Zustand for global state:
+Using Zustand for global state management. Example modal system store:
 
 ```typescript
-// store/states/auth.ts
-import { create } from "zustand";
+// features/modal-system/store/index.ts
+import { createStore, useStore } from "zustand";
+import { devtools } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 
-interface AuthState {
-	user: User | null;
-	setUser: (user: User) => void;
-	clearUser: () => void;
+const modalSystemStore = createStore<IModalSystemState>()(
+	immer(
+		devtools(createModalSystemStore, {
+			enabled: !isProd(),
+			name: "APP (DEV)",
+		}),
+	),
+);
+
+export function useModalStore<T>(selector: (state: IModalSystemState) => T) {
+	return useStore(modalSystemStore, selector);
 }
-
-export const useAuthStore = create<AuthState>((set) => ({
-	user: null,
-	setUser: (user) => set({ user }),
-	clearUser: () => set({ user: null }),
-}));
 ```
 
 ## 📡 API Management
@@ -161,15 +193,10 @@ Centralized API client with automatic auth handling:
 
 ```typescript
 // api.config.ts
-export const api = new ApiClient(CONFIG.servers.api);
+export const api = new HttpClient(CONFIG.servers.api);
 
 // Usage in features
-const { data } = await api
-	.endpoint({
-		method: "GET",
-		route: "/users",
-	})
-	.execute();
+const { data } = await api.get("/users").data();
 ```
 
 ### TanStack Query Integration
@@ -197,8 +224,11 @@ Using React Hook Form + Zod:
 import { z } from "zod";
 
 export const loginSchema = z.object({
-	email: z.string().email(),
-	password: z.string().min(6),
+	email: z.email("Invalid email address").nonempty("Email is required"),
+	password: z
+		.string()
+		.min(8, "Password must be at least 8 characters long")
+		.nonempty("Password is required"),
 });
 
 // Component
@@ -263,7 +293,6 @@ Automatic code formatting and linting before commits:
 4. Add hooks in `hooks/`
 5. Define types in `interfaces/`
 6. Add validation in `validation/`
-   лбьдд
 
 ### Component Development
 
