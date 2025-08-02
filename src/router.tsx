@@ -1,5 +1,3 @@
-
-
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 
@@ -10,7 +8,8 @@ import { authQueries } from "./features/auth/queries";
 import { routeTree } from "./routeTree.gen";
 
 // Create a new router instance
-const router = createRouter({
+// eslint-disable-next-line react-refresh/only-export-components
+export const router = createRouter({
 	routeTree,
 	context: {
 		queryClient: undefined!
@@ -18,6 +17,7 @@ const router = createRouter({
 	defaultNotFoundComponent: NotFoundComponent,
 	defaultErrorComponent: ErrorComponent
 });
+
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {

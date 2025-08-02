@@ -1,6 +1,5 @@
-
 import type {AuthStrategy, HttpHeaders} from "@cordy/endpoint-builder";
-import { HttpClient, JitteredExponentialBackoffRetryStrategy} from "@cordy/endpoint-builder";
+import { createClient, JitteredExponentialBackoffRetryStrategy} from "@cordy/endpoint-builder";
 
 import { CONFIG } from "@/constants/config";
 
@@ -17,7 +16,7 @@ import type { ApiResponse, IAuthResult } from "./types/api-response";
  */
 class SessionStrategy implements AuthStrategy {
 
-	async enrich(): Promise<Partial<HttpHeaders>> {
+	async enrichRequest(): Promise<Partial<HttpHeaders>> {
 		const result = Storage.get<IAuthResult>(CONFIG.authToken);
 
 		return Promise.resolve(result?.accessToken ? {
@@ -25,7 +24,7 @@ class SessionStrategy implements AuthStrategy {
 		} : {});
 	}
 
-	async refresh(_req: Request, res: Response): Promise<boolean> {
+	async handleRequestError(_req: Request, res: Response): Promise<boolean> {
 		if (res.status !== 401 && res.status !== 403) return false;
 		const tokens = Storage.get<IAuthResult>(CONFIG.authToken);
 		if (!tokens?.refreshToken) return false;
@@ -65,9 +64,10 @@ class SessionStrategy implements AuthStrategy {
  * API Clients
  * ==========================================
  */
-export const api = new HttpClient({
+export const api = createClient({
 	baseUrl: CONFIG.servers.api,
 	dedupe: true,
 	retryStrategy: new JitteredExponentialBackoffRetryStrategy(3, 300, 10000),
-	auth: new SessionStrategy(),
+	authStrategy: new SessionStrategy(),
 });
+

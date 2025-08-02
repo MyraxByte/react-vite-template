@@ -1,5 +1,3 @@
-"use no memo";
-
 import { api } from "@/api.config";
 import { CONFIG } from "@/constants/config";
 import type { ILoginResult } from "@/features/login/interfaces/login";
@@ -17,7 +15,6 @@ export async function fetchUser() {
 	try {
 		return await api
 			.get<ApiResponse<ILoggedUser>>("users/@me")
-			.data()
 			.then(res => res.data);
 	} catch (error) {
 		logger.error("useAuth: Failed to fetch user", error);

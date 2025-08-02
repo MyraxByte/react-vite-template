@@ -8,12 +8,10 @@ import type { LoginDto } from "../validation/login";
 
 
 export const logIn = (data: LoginDto) => api
-	.post<ApiResponse<ILoginResult>>("oauth/token")
-	.json({
+	.post<ApiResponse<ILoginResult>>("oauth/token", {
 		grantType: "password",
 		accountType: "admin",
 		email: data.email,
 		password: data.password,
 	})
-	.data()
 	.then(res => res.data);
